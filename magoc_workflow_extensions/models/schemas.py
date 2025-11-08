@@ -47,6 +47,7 @@ class GenerateWorkflowRequest(BaseModel):
     description: str = Field(..., description="Natural language description of the workflow")
     endpoints: List[Dict[str, Any]] = Field(..., description="Available API endpoints")
     specId: str = Field(..., description="OpenAPI spec ID")
+    userId: Optional[str] = Field(None, description="User ID for Convex storage")
 
 
 class AIReasoning(BaseModel):
@@ -66,6 +67,7 @@ class SuggestFlowsRequest(BaseModel):
     """Request for suggesting workflows"""
     endpoints: List[Dict[str, Any]] = Field(..., description="Available API endpoints")
     specId: str = Field(..., description="OpenAPI spec ID")
+    userId: Optional[str] = Field(None, description="User ID for Convex storage")
 
 
 class SuggestedFlow(BaseModel):
@@ -90,6 +92,8 @@ class LearnPatternRequest(BaseModel):
     """Request for learning workflow patterns"""
     referenceWorkflow: Dict[str, Any] = Field(..., description="Reference workflow to learn from")
     referenceEndpoints: List[Dict[str, Any]] = Field(..., description="Endpoints used in workflow")
+    userId: Optional[str] = Field(None, description="User ID for Convex storage")
+    specId: Optional[str] = Field(None, description="OpenAPI spec ID")
 
 
 class WorkflowPattern(BaseModel):
@@ -111,6 +115,7 @@ class AutoBuildRequest(BaseModel):
     learnedPatterns: Dict[str, Any] = Field(..., description="Previously learned patterns")
     endpoints: List[Dict[str, Any]] = Field(..., description="Available API endpoints")
     specId: str = Field(..., description="OpenAPI spec ID")
+    userId: Optional[str] = Field(None, description="User ID for Convex storage")
 
 
 class BuiltWorkflow(BaseModel):
