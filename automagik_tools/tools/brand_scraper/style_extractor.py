@@ -152,8 +152,20 @@ class StyleExtractor:
         font_links = []
         for link in soup.find_all("link", href=True):
             href = link.get("href", "")
-            if "fonts.googleapis.com" in href or "fonts.adobe.com" in href:
-                font_links.append(href)
+            # Use proper URL parsing to validate domain
+            try:
+                from urllib.parse import urlparse
+
+                parsed = urlparse(href)
+                # Only allow HTTPS and check exact hostname
+                if parsed.scheme == "https" and parsed.hostname in [
+                    "fonts.googleapis.com",
+                    "fonts.adobe.com",
+                ]:
+                    font_links.append(href)
+            except ValueError:
+                # Skip malformed URLs
+                continue
 
         return {
             "families": sorted(list(fonts)),
