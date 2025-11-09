@@ -186,7 +186,7 @@ Automagik Tools works with **any MCP-compatible client**—Claude Code, Cursor, 
 | `automagik` | Automagik Suite integration | Orchestrate Spark, Hive, Forge, Omni |
 | `automagik-workflows` | Claude workflow execution | Run and monitor Claude Code workflows |
 | `evolution-api` | WhatsApp automation | Send/receive messages, media, groups |
-| `brand-scraper` | Design token extraction | Scrape websites for colors, fonts, logos, brand voice |
+| `brand-scraper` | Design token extraction | Scrape websites for colors, fonts, logos, brand voice + **NEW**: Tailwind CSS & JS rendering |
 | `openapi` | Dynamic API agent | Any OpenAPI spec → instant agent |
 
 ### Quick Setup
@@ -513,7 +513,7 @@ uvx automagik-tools tool evolution-api -t stdio
 - Automate customer support
 
 ### 🎨 Brand Scraper - Design Token Extraction
-Comprehensive brand scraping and design token extraction from any website.
+Comprehensive brand scraping and design token extraction from any website, with **NEW** support for Tailwind CSS and JavaScript-heavy sites.
 
 ```bash
 uvx automagik-tools tool brand-scraper -t stdio
@@ -521,6 +521,8 @@ uvx automagik-tools tool brand-scraper -t stdio
 
 **Use Cases**:
 - Extract design tokens (colors, fonts, CSS variables)
+- Parse and map Tailwind CSS classes to CSS values **✨ NEW**
+- Scrape JavaScript-heavy sites (React, Vue, Angular) **✨ NEW**
 - Collect logos and brand images
 - Analyze brand voice and tone
 - Create design systems from existing sites
@@ -529,6 +531,9 @@ uvx automagik-tools tool brand-scraper -t stdio
 
 **Features**:
 - 99%+ success rate with aggressive fallback strategies
+- **Tailwind CSS Support**: Maps utility classes to CSS values **✨ NEW**
+- **JavaScript Rendering**: Playwright & Selenium support **✨ NEW**
+- **Smart Fallbacks**: Automatic fallback strategies **✨ NEW**
 - Extracts colors (hex, RGB, named, CSS variables)
 - Identifies fonts (families, system fonts, custom fonts)
 - Detects logos using multiple strategies
@@ -536,9 +541,19 @@ uvx automagik-tools tool brand-scraper -t stdio
 - Batch processing for multiple URLs
 - Optional Convex storage integration
 
+**Enhanced Installation** (for JavaScript rendering):
+```bash
+# Install with Playwright support
+pip install automagik-tools[brand-scraper-js]
+playwright install chromium
+
+# Or install with full support (Playwright + Selenium)
+pip install automagik-tools[brand-scraper-full]
+```
+
 **Example Usage**:
 ```python
-# Comprehensive scraping
+# Comprehensive scraping (now includes Tailwind and JS rendering)
 scrape_brand("https://github.com")
 
 # Extract only design tokens
