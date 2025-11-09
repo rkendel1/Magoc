@@ -186,6 +186,7 @@ Automagik Tools works with **any MCP-compatible client**—Claude Code, Cursor, 
 | `automagik` | Automagik Suite integration | Orchestrate Spark, Hive, Forge, Omni |
 | `automagik-workflows` | Claude workflow execution | Run and monitor Claude Code workflows |
 | `evolution-api` | WhatsApp automation | Send/receive messages, media, groups |
+| `brand-scraper` | Design token extraction | Scrape websites for colors, fonts, logos, brand voice |
 | `openapi` | Dynamic API agent | Any OpenAPI spec → instant agent |
 
 ### Quick Setup
@@ -510,6 +511,48 @@ uvx automagik-tools tool evolution-api -t stdio
 - Manage groups and contacts
 - Handle status updates
 - Automate customer support
+
+### 🎨 Brand Scraper - Design Token Extraction
+Comprehensive brand scraping and design token extraction from any website.
+
+```bash
+uvx automagik-tools tool brand-scraper -t stdio
+```
+
+**Use Cases**:
+- Extract design tokens (colors, fonts, CSS variables)
+- Collect logos and brand images
+- Analyze brand voice and tone
+- Create design systems from existing sites
+- Competitor brand analysis
+- Store extracted data to Convex backend
+
+**Features**:
+- 99%+ success rate with aggressive fallback strategies
+- Extracts colors (hex, RGB, named, CSS variables)
+- Identifies fonts (families, system fonts, custom fonts)
+- Detects logos using multiple strategies
+- Analyzes tone (formal, casual, professional, friendly)
+- Batch processing for multiple URLs
+- Optional Convex storage integration
+
+**Example Usage**:
+```python
+# Comprehensive scraping
+scrape_brand("https://github.com")
+
+# Extract only design tokens
+extract_design_tokens("https://stripe.com")
+
+# Extract images and logos
+extract_images("https://apple.com")
+
+# Analyze voice and tone
+analyze_tone("https://mailchimp.com")
+
+# Scrape and store to Convex
+scrape_and_store("https://notion.so")
+```
 
 ### 🌐 OpenAPI - Dynamic Agents
 Transform any OpenAPI spec into an instant intelligent agent.
