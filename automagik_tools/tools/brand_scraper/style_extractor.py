@@ -4,7 +4,6 @@ Style Extractor - Extract CSS, colors, fonts, and design tokens from web pages
 
 import re
 from typing import Dict, Any, List, Set, Optional
-from urllib.parse import urljoin
 import httpx
 from bs4 import BeautifulSoup
 
@@ -16,7 +15,9 @@ class StyleExtractor:
         self.timeout = timeout
         self.user_agent = user_agent or "Mozilla/5.0 (compatible; BrandScraperBot/1.0)"
 
-    async def extract(self, url: str, html_content: Optional[str] = None) -> Dict[str, Any]:
+    async def extract(
+        self, url: str, html_content: Optional[str] = None
+    ) -> Dict[str, Any]:
         """
         Extract design tokens from a URL or HTML content
 
@@ -30,8 +31,8 @@ class StyleExtractor:
         if not html_content:
             html_content = await self._fetch_page(url)
 
-        soup = BeautifulSoup(html_content, 'html.parser')
-        
+        soup = BeautifulSoup(html_content, "html.parser")
+
         colors = self._extract_colors(soup, html_content)
         fonts = self._extract_fonts(soup, html_content)
         css_variables = self._extract_css_variables(html_content)
@@ -45,7 +46,7 @@ class StyleExtractor:
             "metadata": {
                 "url": url,
                 "title": self._get_title(soup),
-            }
+            },
         }
 
     async def _fetch_page(self, url: str) -> str:
@@ -56,26 +57,30 @@ class StyleExtractor:
             response.raise_for_status()
             return response.text
 
-    def _extract_colors(self, soup: BeautifulSoup, html_content: str) -> Dict[str, List[str]]:
+    def _extract_colors(
+        self, soup: BeautifulSoup, html_content: str
+    ) -> Dict[str, List[str]]:
         """Extract color values from CSS and inline styles"""
         colors: Set[str] = set()
 
         # Extract from inline styles
         for element in soup.find_all(style=True):
-            style = element.get('style', '')
+            style = element.get("style", "")
             colors.update(self._find_colors_in_text(style))
 
         # Extract from style tags
-        for style_tag in soup.find_all('style'):
-            colors.update(self._find_colors_in_text(style_tag.string or ''))
+        for style_tag in soup.find_all("style"):
+            colors.update(self._find_colors_in_text(style_tag.string or ""))
 
         # Extract from full HTML (catches external CSS that might be inlined)
         colors.update(self._find_colors_in_text(html_content))
 
         # Categorize colors
-        hex_colors = [c for c in colors if c.startswith('#')]
-        rgb_colors = [c for c in colors if c.startswith('rgb')]
-        named_colors = [c for c in colors if not c.startswith('#') and not c.startswith('rgb')]
+        hex_colors = [c for c in colors if c.startswith("#")]
+        rgb_colors = [c for c in colors if c.startswith("rgb")]
+        named_colors = [
+            c for c in colors if not c.startswith("#") and not c.startswith("rgb")
+        ]
 
         return {
             "hex": sorted(list(set(hex_colors)))[:50],  # Limit to 50 most common
@@ -87,22 +92,36 @@ class StyleExtractor:
     def _find_colors_in_text(self, text: str) -> Set[str]:
         """Find color values in text using regex"""
         colors = set()
-        
+
         # Hex colors
-        hex_pattern = r'#(?:[0-9a-fA-F]{3}){1,2}\b'
+        hex_pattern = r"#(?:[0-9a-fA-F]{3}){1,2}\b"
         colors.update(re.findall(hex_pattern, text))
-        
+
         # RGB/RGBA colors
-        rgb_pattern = r'rgba?\([^)]+\)'
+        rgb_pattern = r"rgba?\([^)]+\)"
         colors.update(re.findall(rgb_pattern, text))
-        
+
         # Named colors (common web colors)
         named_colors = [
-            'black', 'white', 'red', 'green', 'blue', 'yellow', 'purple', 'orange',
-            'pink', 'brown', 'gray', 'grey', 'navy', 'teal', 'cyan', 'magenta'
+            "black",
+            "white",
+            "red",
+            "green",
+            "blue",
+            "yellow",
+            "purple",
+            "orange",
+            "pink",
+            "brown",
+            "gray",
+            "grey",
+            "navy",
+            "teal",
+            "cyan",
+            "magenta",
         ]
         for color in named_colors:
-            if re.search(r'\b' + color + r'\b', text, re.IGNORECASE):
+            if re.search(r"\b" + color + r"\b", text, re.IGNORECASE):
                 colors.add(color.lower())
 
         return colors
@@ -119,21 +138,21 @@ class StyleExtractor:
 
         # Extract from inline styles
         for element in soup.find_all(style=True):
-            style = element.get('style', '')
+            style = element.get("style", "")
             fonts.update(self._find_fonts_in_text(style))
 
         # Extract from style tags
-        for style_tag in soup.find_all('style'):
-            fonts.update(self._find_fonts_in_text(style_tag.string or ''))
+        for style_tag in soup.find_all("style"):
+            fonts.update(self._find_fonts_in_text(style_tag.string or ""))
 
         # Extract from HTML
         fonts.update(self._find_fonts_in_text(html_content))
 
         # Look for Google Fonts or font CDN links
         font_links = []
-        for link in soup.find_all('link', href=True):
-            href = link.get('href', '')
-            if 'fonts.googleapis.com' in href or 'fonts.adobe.com' in href:
+        for link in soup.find_all("link", href=True):
+            href = link.get("href", "")
+            if "fonts.googleapis.com" in href or "fonts.adobe.com" in href:
                 font_links.append(href)
 
         return {
@@ -145,21 +164,28 @@ class StyleExtractor:
     def _find_fonts_in_text(self, text: str) -> Set[str]:
         """Find font-family declarations in CSS text"""
         fonts = set()
-        
+
         # Match font-family declarations
-        font_pattern = r'font-family:\s*([^;]+);'
+        font_pattern = r"font-family:\s*([^;]+);"
         matches = re.findall(font_pattern, text, re.IGNORECASE)
-        
+
         for match in matches:
             # Clean up font names
-            font_list = [f.strip().strip('"\'') for f in match.split(',')]
+            font_list = [f.strip().strip("\"'") for f in match.split(",")]
             fonts.update(font_list)
 
         return fonts
 
     def _categorize_system_fonts(self, fonts: List[str]) -> Dict[str, List[str]]:
         """Categorize fonts into system, serif, sans-serif, etc."""
-        system = ['system-ui', 'Arial', 'Helvetica', 'Times New Roman', 'Georgia', 'Courier']
+        system = [
+            "system-ui",
+            "Arial",
+            "Helvetica",
+            "Times New Roman",
+            "Georgia",
+            "Courier",
+        ]
         serif_fonts = []
         sans_serif_fonts = []
         custom_fonts = []
@@ -168,9 +194,9 @@ class StyleExtractor:
             font_lower = font.lower()
             if any(sys_font.lower() in font_lower for sys_font in system):
                 continue
-            elif 'serif' in font_lower and 'sans' not in font_lower:
+            elif "serif" in font_lower and "sans" not in font_lower:
                 serif_fonts.append(font)
-            elif 'sans' in font_lower or font.lower() in ['arial', 'helvetica']:
+            elif "sans" in font_lower or font.lower() in ["arial", "helvetica"]:
                 sans_serif_fonts.append(font)
             else:
                 custom_fonts.append(font)
@@ -184,11 +210,11 @@ class StyleExtractor:
     def _extract_css_variables(self, html_content: str) -> Dict[str, str]:
         """Extract CSS custom properties (variables)"""
         variables = {}
-        
+
         # Find CSS variables (--variable-name: value)
-        var_pattern = r'--([a-zA-Z0-9-_]+):\s*([^;]+);'
+        var_pattern = r"--([a-zA-Z0-9-_]+):\s*([^;]+);"
         matches = re.findall(var_pattern, html_content)
-        
+
         for var_name, var_value in matches:
             variables[f"--{var_name}"] = var_value.strip()
 
@@ -197,14 +223,14 @@ class StyleExtractor:
     def _extract_typography(self, soup: BeautifulSoup) -> Dict[str, Any]:
         """Extract typography scale and heading styles"""
         headings = {}
-        
+
         for level in range(1, 7):
-            heading_tag = f'h{level}'
+            heading_tag = f"h{level}"
             heading = soup.find(heading_tag)
             if heading:
                 headings[heading_tag] = {
                     "text": heading.get_text()[:100],  # First 100 chars
-                    "style": heading.get('style', ''),
+                    "style": heading.get("style", ""),
                 }
 
         return {
@@ -214,12 +240,12 @@ class StyleExtractor:
 
     def _get_body_text_sample(self, soup: BeautifulSoup) -> str:
         """Get sample of body text"""
-        paragraphs = soup.find_all('p')
+        paragraphs = soup.find_all("p")
         if paragraphs:
             return paragraphs[0].get_text()[:200]
         return ""
 
     def _get_title(self, soup: BeautifulSoup) -> str:
         """Get page title"""
-        title_tag = soup.find('title')
+        title_tag = soup.find("title")
         return title_tag.get_text() if title_tag else ""
