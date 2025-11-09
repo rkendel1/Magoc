@@ -34,6 +34,35 @@ class BrandScraperConfig(BaseSettings):
         description="User agent for HTTP requests",
     )
 
+    # JavaScript Rendering Configuration
+    enable_playwright: bool = Field(
+        default=True, description="Enable Playwright for JavaScript rendering"
+    )
+
+    selenium_fallback: bool = Field(
+        default=False,
+        description="Use Selenium as fallback when Playwright fails or unavailable",
+    )
+
+    js_rendering_enabled: bool = Field(
+        default=True,
+        description="Enable JavaScript rendering (requires Playwright or Selenium)",
+    )
+
+    js_rendering_timeout: int = Field(
+        default=30, description="Timeout for JavaScript rendering in seconds"
+    )
+
+    # Tailwind Configuration
+    use_tailwind_mapping: bool = Field(
+        default=True, description="Enable Tailwind class-name to CSS mapping"
+    )
+
+    tailwind_config_paths: list[str] = Field(
+        default_factory=lambda: ["tailwind.config.js", "tailwind.config.ts"],
+        description="Paths to search for Tailwind configuration files",
+    )
+
     # Extraction Configuration
     extract_styles: bool = Field(
         default=True, description="Extract CSS and design tokens"
@@ -47,4 +76,14 @@ class BrandScraperConfig(BaseSettings):
 
     max_text_length: int = Field(
         default=10000, description="Maximum text length for tone analysis"
+    )
+
+    # Error Handling Configuration
+    enable_detailed_logging: bool = Field(
+        default=True, description="Enable detailed error logging"
+    )
+
+    fallback_on_js_error: bool = Field(
+        default=True,
+        description="Fallback to static HTML extraction when JS rendering fails",
     )
